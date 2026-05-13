@@ -72,26 +72,29 @@ body {
   }
 }
 
-#user-overlay > div > div:first-child {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--dk-green-bg);
+.overlaylogo {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  font-size: 24px;
 }
+
+.overlaylogo svg {
+  display: block;
+}
+
+
 
 #user-overlay h2 {
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 8px;
+  text-align: center;
 }
 
 #user-overlay p {
+  text-align: center;
   font-size: 13px;
   color: var(--muted);
   margin-bottom: 18px;
