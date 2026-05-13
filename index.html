@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find Your Feet — Performance Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+
+
+<body>
+  <div id="user-overlay">
+    <div>
+      <div>
+        👤
+      </div>
+      <h2>Who's using this dashboard?</h2>
+      <p>Helps us understand how the TOT tool is being used across the programme.</p>
+      <input id="modal-name" type="email" placeholder="Enter Your FYF email" autocomplete="email"/>
+      <div id="modal-roles">
+        <button class="role-opt" data-role="Field officer">Field officer</button>
+        <button class="role-opt" data-role="District manager">District manager</button>
+        <button class="role-opt" data-role="Programme team">Programme team</button>
+      </div>
+      <button id="modal-submit" disabled>
+        Open dashboard
+      </button>
+    </div>
+  </div>
+  
+  <div class="header">
+  <div class="brand">
+    <div class="logo">
+      <svg width="72" height="60" viewBox="0 0 175 210" xmlns="http://www.w3.org/2000/svg"><style>text{fill:#fff;font:bold 35px Arial;text-anchor:middle;dominant-baseline:central}rect{fill:#1a1a5e}</style><rect x="0" y="0" width="40" height="60"/><text x="20" y="30">F</text><rect x="45" y="0" width="40" height="60"/><text x="65" y="30">I</text><rect x="90" y="0" width="40" height="60"/><text x="110" y="30">N</text><rect x="135" y="0" width="40" height="60"/><text x="155" y="30">D</text><rect x="0" y="65" width="40" height="60"/><text x="20" y="95">Y</text><rect x="45" y="65" width="40" height="60"/><text x="65" y="95">O</text><rect x="90" y="65" width="40" height="60"/><text x="110" y="95">U</text><rect x="135" y="65" width="40" height="60"/><text x="155" y="95">R</text><rect x="0" y="130" width="40" height="60"/><text x="20" y="160">F</text><rect x="45" y="130" width="40" height="60"/><text x="65" y="160">E</text><rect x="90" y="130" width="40" height="60"/><text x="110" y="160">E</text><rect x="135" y="130" width="40" height="60"/><text x="155" y="160">T</text></svg>
+    </div>
+    <div>
+      <div class="brand-title">Find Your Feet</div>
+      <div class="brand-sub">Performance Dashboard</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="status-badge" class="badge badge-live">Loading...</span>
+    <span id="data-date" style="font-size:11px;color:var(--muted);"></span>
+  </div>
+</div>
+
+<div id="loading-screen" class="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text">Fetching data from Google Sheets...</div>
+</div>
+
+<div id="error-screen" style="display:none;">
+  <div class="error-box">
+    <h3>Could not load data</h3>
+    <p id="error-msg">Make sure the spreadsheet is shared publicly (Anyone with the link → Viewer).</p>
+    <!-- <p style="margin-top:8px;">Spreadsheet ID: <code>1i9keM9OSk0NDecfH95vyIaBdmKNyxIHI</code></p> -->
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+
+  <div class="nav-tabs">
+    <div class="nav-tab active"  data-tab="overview">Overview</div>
+    <div class="nav-tab"         data-tab="officers">Officer performance</div>
+    <div class="nav-tab"         data-tab="schools">School performance</div>
+    <div class="nav-tab"         data-tab="weekly">Weekly trends</div>
+    <div class="nav-tab"         data-tab="wowschools">W.O.W School Changes</div>
+  </div>
+
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div id="tab-overview" class="tab-panel active">
+      <div class="metrics-row" id="ov-metrics"></div>
+      <div class="rank-legend">
+        <span class="rank-chip r-dkgreen">≥ 100 — Excellent</span>
+        <span class="rank-chip r-ltgreen">90–99 — Good</span>
+        <span class="rank-chip r-yellow">70–89 — Moderate</span>
+        <span class="rank-chip r-ltred">60–69 — At risk</span>
+        <span class="rank-chip r-dkred">&lt; 60 — Critical</span>
+        <span class="rank-chip r-grey">No data</span>
+      </div>
+      <div class="panels-row two">
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">Officer performance</div><div class="panel-sub">Avg weekly min per child</div></div></div>
+          <div class="chart-wrap" style="height:280px;"><canvas id="ov-officer-chart" role="img" aria-label="Bar chart of officer performance">Officer performance bars</canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">School bands</div><div class="panel-sub">Distribution across all schools</div></div></div>
+          <div id="ov-band-strip" class="band-strip"></div>
+          <div style="display:flex;justify-content:center;"><div class="chart-wrap" style="height:160px;width:160px;"><canvas id="ov-donut" role="img" aria-label="Donut chart of school band distribution">School distribution</canvas></div></div>
+        </div>
+      </div>
+      <div class="panels-row two">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Top 5 schools</div><div class="panel-action" data-switch-tab="schools">All schools →</div></div>
+          <ul class="school-list" id="ov-top-schools"></ul>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Schools needing attention</div><div class="panel-action" data-switch-tab="schools">All schools →</div></div>
+          <ul class="school-list" id="ov-bottom-schools"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- OFFICERS -->
+    <div id="tab-officers" class="tab-panel">
+      <div class="filter-bar">
+        <span class="filter-label">Sort by:</span>
+        <button class="sort-btn active" data-sort="perf">Performance</button>
+        <button class="sort-btn"        data-sort="schools">Schools</button>
+        <button class="sort-btn"        data-sort="name">Name</button>
+        <input class="search-input" id="officer-search" placeholder="Search officer..." style="margin-left:auto;" />
+      </div>
+      <div class="panels-row two">
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">Officer ranking</div><div class="panel-sub">Avg weekly min per child</div></div></div>
+          <div class="chart-wrap" style="height:300px;"><canvas id="off-rank-chart" role="img" aria-label="Horizontal bar chart of officer ranking">Officer rankings</canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Officer details</div></div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Officer</th><th>Schools</th><th>Avg min/child</th><th>Band</th></tr></thead>
+            <tbody id="off-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panels-row one">
+        <div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title">School breakdown by officer</div><div class="panel-sub">Select an officer to drill down</div></div>
+            <div class="officer-pills" id="off-pills"></div>
+          </div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="off-school-chart" role="img" aria-label="Bar chart of schools for selected officer">Select an officer</canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHOOLS -->
+    <div id="tab-schools" class="tab-panel">
+      <div class="filter-bar">
+        <span class="filter-label">Officer:</span>
+        <select id="school-officer-sel"><option value="">All officers</option></select>
+        <span class="filter-label">Band:</span>
+        <select id="school-band-sel">
+          <option value="">All bands</option>
+          <option value="dkgreen">≥ 100 Excellent</option>
+          <option value="ltgreen">90–99 Good</option>
+          <option value="yellow">70–89 Moderate</option>
+          <option value="ltred">60–69 At risk</option>
+          <option value="dkred">&lt; 60 Critical</option>
+          <option value="grey">No data</option>
+        </select>
+        <input class="search-input" id="school-search" placeholder="Search school..." style="margin-left:auto;" />
+        <span id="school-count-lbl" style="font-size:11px;color:var(--muted);"></span>
+      </div>
+      <div class="rank-legend" style="margin-bottom:14px;">
+        <span class="rank-chip r-dkgreen">≥ 100</span>
+        <span class="rank-chip r-ltgreen">90–99</span>
+        <span class="rank-chip r-yellow">70–89</span>
+        <span class="rank-chip r-ltred">60–69</span>
+        <span class="rank-chip r-dkred">&lt; 60</span>
+        <span class="rank-chip r-grey">No data</span>
+      </div>
+      <div class="panels-row one">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">All schools — ranked by avg min/child</div></div>
+          <div class="chart-wrap" id="school-chart-wrap" style="height:900px;">
+            <canvas id="school-rank-chart" role="img" aria-label="Horizontal bar chart ranking all schools">School rankings</canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEKLY -->
+    <div id="tab-weekly" class="tab-panel">
+      <div class="panels-row one">
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">Reporting rate trend — all officers</div><div class="panel-sub">Avg reporting % per week across assigned schools</div></div></div>
+          <div class="chart-wrap" style="height:300px;"><canvas id="wk-line-chart" role="img" aria-label="Line chart of weekly reporting rates">Weekly trend lines</canvas></div>
+        </div>
+      </div>
+      <div class="panels-row two">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Week-on-week change</div><div class="panel-sub">First week → latest week</div></div>
+          <table class="data-table" id="wk-wow-table">
+            <thead id="wk-thead"><tr><th>Officer</th><th>Change</th><th>Band (avg)</th></tr></thead>
+            <tbody id="wk-tbody"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div><div class="panel-title">session duration</div><div class="panel-sub">From summary sheet weekly columns</div></div></div>
+          <div class="chart-wrap" style="height:260px;"><canvas id="wk-min-chart" role="img" aria-label="Grouped bar chart of avg minutes per child by week and officer">Weekly minutes chart</canvas></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- W.O.W SCHOOL CHANGES -->
+    <div id="tab-wowschools" class="tab-panel">
+      <div class="filter-bar">
+        <span class="filter-label">Officer:</span>
+        <select id="wow-officer-sel"><option value="">All officers</option></select>
+        <span class="filter-label">Band:</span>
+        <select id="wow-band-sel">
+          <option value="">All bands</option>
+          <option value="dkgreen">≥ 100 Excellent</option>
+          <option value="ltgreen">90–99 Good</option>
+          <option value="yellow">70–89 Moderate</option>
+          <option value="ltred">60–69 At risk</option>
+          <option value="dkred">&lt; 60 Critical</option>
+          <option value="grey">No data</option>
+        </select>
+        <input class="search-input" id="wow-search" placeholder="Search school..." style="margin-left:auto;" />
+        <span id="wow-school-count" style="font-size:11px;color:var(--muted);"></span>
+      </div>
+      <div class="rank-legend" style="margin-bottom:14px;">
+        <span class="rank-chip r-dkgreen">≥ 100 Excellent</span>
+        <span class="rank-chip r-ltgreen">90–99 Good</span>
+        <span class="rank-chip r-yellow">70–89 Moderate</span>
+        <span class="rank-chip r-ltred">60–69 At risk</span>
+        <span class="rank-chip r-dkred">&lt; 60 Critical</span>
+        <span class="rank-chip r-grey">No data</span>
+      </div>
+      <div class="panels-row one">
+        <div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title">W.O.W School Changes</div><div class="panel-sub">Time on task per school — week by week (avg min/child)</div></div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="wow-school-table">
+              <thead id="wow-school-thead"></thead>
+              <tbody id="wow-school-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .main -->
+</div><!-- end #app -->
+
+</body>
+</html>
