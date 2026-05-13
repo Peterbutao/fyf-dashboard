@@ -36,3 +36,5 @@ logs/
 # Misc
 .cache/
 .turbo/
+".wrangler" 
+.wrangler 
