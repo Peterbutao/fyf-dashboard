@@ -12,7 +12,9 @@
     "chart.js": "^4.4.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.36.4",
     "terser": "^5.47.1",
-    "vite": "^8.0.11"
+    "vite": "^8.0.11",
+    "wrangler": "^4.90.1"
   }
 }
