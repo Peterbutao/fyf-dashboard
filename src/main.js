@@ -86,7 +86,7 @@ function logStep(msg, status = 'running') {
     row.classList.remove('running');
     row.classList.add('done');
     const icon = row.querySelector('.log-icon');
-    if (icon) icon.textContent = '✓';
+    if (icon) icon.textContent = '#';
     const t = row.querySelector('.log-time');
     if (t) t.textContent = elapsed + 's';
   });
