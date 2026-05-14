@@ -218,8 +218,55 @@ body {
 .loading-screen {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  height: 60vh; gap: 16px;
+  min-height: 60vh; padding: 24px;
 }
+.load-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%; max-width: 560px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+.load-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.load-header-icon { flex-shrink:0; width:36px; height:36px; display:flex; align-items:center; justify-content:center; }
+.load-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.load-sub   { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.load-spinner {
+  margin-left: auto; flex-shrink: 0;
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: #1B5E20;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.load-log-wrap {
+  background: #0f1117;
+  padding: 14px 16px;
+  min-height: 120px; max-height: 320px;
+  overflow-y: auto;
+  font-family: 'DM Mono', monospace;
+}
+.load-log { display: flex; flex-direction: column; gap: 6px; }
+.log-row {
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 12px; line-height: 1.5;
+  animation: logFadeIn 0.2s ease-out;
+}
+@keyframes logFadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+.log-icon { flex-shrink:0; width:14px; text-align:center; }
+.log-msg  { flex:1; color:#d4d4d4; }
+.log-time { flex-shrink:0; color:#6b7280; font-size:11px; min-width:30px; text-align:right; }
+.log-row.running .log-icon { color: #facc15; animation: pulse 1s ease-in-out infinite; }
+.log-row.done    .log-icon { color: #4ade80; }
+.log-row.error   .log-icon { color: #f87171; }
+.log-row.running .log-msg  { color: #f9fafb; }
+.log-row.done    .log-msg  { color: #9ca3af; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 .spinner {
   width: 36px; height: 36px;
   border: 3px solid var(--border);
@@ -484,4 +531,236 @@ select:focus, .search-input:focus { border-color: #1B5E20; }
 }
 #wow-school-table td, #wow-school-table th {
   white-space: nowrap;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE — max-width: 640px
+   ============================================================ */
+@media (max-width: 640px) {
+
+  /* HEADER */
+  .header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .brand-title { font-size: 13px; }
+  .brand-sub   { font-size: 10px; }
+  .brand { gap: 8px; }
+  .logo svg { width: 52px; height: 44px; }
+  .header-right {
+    gap: 6px;
+    font-size: 10px;
+  }
+  #data-date { display: none; }
+
+  /* USER OVERLAY MODAL */
+  #user-overlay > div {
+    width: 92%;
+    padding: 22px 18px;
+  }
+  #modal-roles {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .role-opt {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  /* NAV TABS — scrollable horizontally */
+  .nav-tabs {
+    padding: 0 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    white-space: nowrap;
+    display: flex;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 10px 14px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  /* MAIN CONTENT */
+  .main { padding: 14px 12px; }
+
+  /* METRIC CARDS */
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .metric-card { padding: 12px 14px; }
+  .metric-value { font-size: 20px; }
+  .metric-label { font-size: 9px; }
+  .metric-sub   { font-size: 10px; }
+
+  /* PANELS — always single column */
+  .panels-row.two,
+  .panels-row.three-one,
+  .panels-row.one {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .panels-row { margin-bottom: 10px; }
+  .panel { padding: 14px 12px; }
+  .panel-header { margin-bottom: 12px; }
+  .panel-title  { font-size: 12px; }
+  .panel-sub    { font-size: 10px; }
+  .panel-action { font-size: 10px; }
+
+  /* RANK LEGEND — wrap tightly */
+  .rank-legend {
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+  .rank-chip {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  /* BAND STRIP */
+  .band-seg {
+    padding: 6px 2px;
+    font-size: 10px;
+  }
+  .band-count { font-size: 13px; }
+
+  /* CHARTS — shorter on mobile */
+  .chart-wrap[style*="height:280px"] { height: 200px !important; }
+  .chart-wrap[style*="height:300px"] { height: 220px !important; }
+  .chart-wrap[style*="height:260px"] { height: 200px !important; }
+  .chart-wrap[style*="height:900px"] { height: 500px !important; }
+
+  /* DONUT — smaller */
+  div[style*="height:160px"][style*="width:160px"] {
+    height: 130px !important;
+    width: 130px !important;
+  }
+
+  /* FILTER BAR — wrap */
+  .filter-bar {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .filter-label { font-size: 10px; }
+  select { font-size: 11px; padding: 5px 8px; max-width: 140px; }
+  .search-input {
+    width: 100%;
+    margin-left: 0 !important;
+    font-size: 12px;
+  }
+  .sort-btn { font-size: 10px; padding: 4px 8px; }
+  #school-count-lbl,
+  #wow-school-count { font-size: 10px; width: 100%; }
+
+  /* OFFICER PILLS — scroll horizontally */
+  .officer-pills {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    max-width: 100%;
+  }
+  .officer-pills::-webkit-scrollbar { display: none; }
+  .officer-pill { flex-shrink: 0; font-size: 10px; padding: 3px 10px; }
+
+  /* PANEL HEADER — stack on mobile so pills don't overflow */
+  #tab-officers .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* TABLES — tighter */
+  .data-table { font-size: 11px; }
+  .data-table th {
+    font-size: 9px;
+    padding: 0 6px 6px;
+  }
+  .data-table td { padding: 7px 6px; }
+  .rbadge { font-size: 10px; min-width: 42px; padding: 2px 6px; }
+
+  /* OFFICER TABLE — hide progress bar column, keep name + schools + badge */
+  #off-tbody td:nth-child(4),
+  #tab-officers thead th:nth-child(4) { display: none; }
+
+  /* SCHOOL LIST */
+  .school-item { padding: 7px 0; font-size: 11px; }
+  .school-off  { font-size: 10px; }
+
+  /* PROGRESS BAR */
+  .prog-val { font-size: 11px; }
+
+  /* W.O.W table scroll container — clip properly */
+  #tab-wowschools .panel { padding: 14px 0 14px 0; }
+  #tab-wowschools .panel-header { padding: 0 12px; }
+  #tab-wowschools [style*="overflow-x:auto"] {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    border-top: 1px solid var(--border);
+  }
+
+  /* W.O.W table — narrower sticky cols, smaller text */
+  #wow-school-table th:nth-child(1),
+  #wow-school-table td:nth-child(1) {
+    min-width: 85px;
+    max-width: 85px;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #wow-school-table th:nth-child(2),
+  #wow-school-table td:nth-child(2) {
+    left: 85px;
+    min-width: 50px;
+    max-width: 50px;
+    font-size: 10px;
+  }
+  #wow-school-table td,
+  #wow-school-table th {
+    font-size: 11px;
+    padding: 6px 7px;
+  }
+
+  /* Weekly WOW change table — hide per-week columns, keep Officer + Change + Band */
+  #wk-tbody td:not(:first-child):not(:last-child):not(:nth-last-child(2)),
+  #wk-thead th:not(:first-child):not(:last-child):not(:nth-last-child(2)) {
+    display: none;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE PHONE — orientation hint
+   ============================================================ */
+@media (max-width: 860px) and (orientation: landscape) {
+  /* Give charts more vertical room since screen is wider */
+  .chart-wrap[style*="height:280px"] { height: 240px !important; }
+  .chart-wrap[style*="height:300px"] { height: 260px !important; }
+  .chart-wrap[style*="height:260px"] { height: 220px !important; }
+
+  /* Two-column metrics in landscape */
+  .metrics-row { grid-template-columns: repeat(3, 1fr); }
+
+  /* Two-column panels in landscape phone */
+  .panels-row.two { grid-template-columns: 1fr 1fr; }
+}
+
+/* ============================================================
+   TABLET — max-width: 860px (supplement the existing breakpoint)
+   ============================================================ */
+@media (max-width: 860px) and (min-width: 641px) {
+  .main { padding: 18px 20px; }
+  .header { padding: 14px 20px; }
+  .nav-tabs { padding: 0 16px; }
+  .metrics-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .filter-bar { flex-wrap: wrap; }
+  .search-input { width: 150px; }
 }

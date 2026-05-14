@@ -73,19 +73,57 @@ async function getSheetByGid(gid) {
   });
 }
 
+/* ── Loading log helpers ──────────────────────────────────────── */
+let _loadStart = 0;
+
+function logStep(msg, status = 'running') {
+  const log = document.getElementById('load-log');
+  if (!log) return;
+  const elapsed = ((Date.now() - _loadStart) / 1000).toFixed(1);
+
+  // Complete the previous running item
+  log.querySelectorAll('.log-row.running').forEach(row => {
+    row.classList.remove('running');
+    row.classList.add('done');
+    const icon = row.querySelector('.log-icon');
+    if (icon) icon.textContent = '✓';
+    const t = row.querySelector('.log-time');
+    if (t) t.textContent = elapsed + 's';
+  });
+
+  if (status === 'final') return; // Just close the last item
+
+  const row = document.createElement('div');
+  row.className = 'log-row ' + status;
+  row.innerHTML = `<span class="log-icon">${status === 'error' ? '✕' : '◌'}</span><span class="log-msg">${msg}</span><span class="log-time"></span>`;
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+
 async function getAllSheets() {
-  const result  = { weeks: [] };
-  result.summary     = await getSheetByGid(GID_SUMMARY);
+  _loadStart = Date.now();
+  const result = { weeks: [] };
+
+  logStep('Initialising connection to Google Sheets');
+  result.summary = await getSheetByGid(GID_SUMMARY);
+
+  logStep('Loading allocations sheet');
   result.allocations = await getSheetByGid(GID_ALLOCATIONS);
-  for (const wk of WEEKS) {
-    if (!wk.gid) continue;
+
+  const activeWeeks = WEEKS.filter(w => w.gid);
+  logStep(`Loading ${activeWeeks.length} weekly data sheets`);
+
+  for (const wk of activeWeeks) {
     try {
+      logStep(`Fetching week: ${wk.label}`);
       const rows = await getSheetByGid(wk.gid);
       if (rows.length > 0) result.weeks.push({ ...wk, rows });
     } catch (_) {
       // Sheet exists in list but not yet populated — skip silently
     }
   }
+
+  logStep('', 'final'); // Close last row
   return result;
 }
 
